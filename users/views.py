@@ -1,20 +1,21 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from django.contrib.auth import get_user_model
+from rest_framework.generics import ListCreateAPIView, CreateAPIView, get_object_or_404
 
-from .models import UserModel
+from cars.serializers import CarSerializer
 from .serializers import UserSerializer
 
-
-class ListCreateView(ListCreateAPIView):
-    serializer_class = UserSerializer
-
-    def get_queryset(self):
-        qs = UserModel.objects.all()
-        name = self.request.query_params.get('name')
-        if name:
-            qs = qs.filter(name__iexact=name)
-        return qs
+UserModel = get_user_model()
 
 
-class ReadUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class UserListCreateView(ListCreateAPIView):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
+
+
+class CarCreate(CreateAPIView):
+    serializer_class = CarSerializer
+
+    def perform_create(self, serializer):
+        user_id = self.kwargs.get('pk')
+        user = get_object_or_404(UserModel, pk=user_id)
+        serializer.save(user=user)
