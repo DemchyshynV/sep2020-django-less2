@@ -1,6 +1,6 @@
 from django.urls import path, include
 
 urlpatterns = [
+    path('/auth', include('_auth.urls')),
     path('/users', include('users.urls')),
-    path('/cars', include('cars.urls'))
 ]
